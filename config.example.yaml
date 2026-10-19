@@ -1,0 +1,99 @@
+# manga-scanlation configuration
+# Copy to config.yaml and edit. Relative paths are resolved against this file's
+# directory, so the whole folder stays portable.
+#
+#   cp config.example.yaml config.yaml
+
+paths:
+  data: ./data              # everything this tool writes
+  inbox: ./inbox            # "local" source: every sub-folder here is one book
+  source: ./data/source     # original pages (downloaded or imported)
+  output: ./data/output     # translated pages
+  logs: ./data/logs
+  reports: ./data/reports   # comparison sheets produced by `mscan compare`
+  state: ./data/state.json  # per-book progress, so reruns resume instead of redo
+
+# ---------------------------------------------------------------------------
+# Where the pages come from.
+#   local      -> read books from paths.inbox, no network at all
+#   gallerydl  -> let gallery-dl fetch them; works with any site gallery-dl
+#                 supports, not just one gallery. Needs `gallery-dl` installed.
+# ---------------------------------------------------------------------------
+source:
+  type: local
+  local:
+    # true = move pages into paths.source (keeps one copy),
+    # false = copy (inbox stays untouched)
+    move: false
+  gallerydl:
+    executable: gallery-dl
+    config: ./config/gallery-dl.json
+    links_file: ./links.txt      # one URL per line, '#' starts a comment
+    urls: []                     # or pass URLs straight in the config
+    extra_args: []               # e.g. ["--range", "1-20"]
+
+# ---------------------------------------------------------------------------
+# Who does the actual work.
+#   mit  -> manga-image-translator (https://github.com/zyddnys/manga-image-translator)
+#           handles detection, OCR, inpainting and typesetting.
+#   passthrough -> no translation; copies pages through so you can check paths
+#                  and page flow without a model. (Spelled 'passthrough' rather
+#                  than 'null' on purpose: an unquoted YAML `null` would be a
+#                  null value, not the string.)
+# ---------------------------------------------------------------------------
+engine:
+  type: mit
+  mit:
+    root: ./vendor/manga-image-translator   # checkout of manga-image-translator
+    # Interpreter of the environment where manga-image-translator is installed.
+    # Windows example: ./.venv/Scripts/python.exe
+    python: ./.venv/bin/python
+    # Quality knobs (mask dilation, font size offset, detector thresholds...)
+    # live in this JSON, which is manga-image-translator's own config format.
+    # Copy config/mit-config.example.json to config/mit-config.json and tune it.
+    base_config: ./config/mit-config.json
+    font: ./fonts/SourceHanSansSC-Bold.otf   # any CJK-capable font file
+    gpu: true
+    verbose: false        # true = upstream also saves intermediate images
+    attempts: 2           # per-page retries inside manga-image-translator
+    context_size: 3       # pages of context handed to the translator
+    extra_args: []        # appended verbatim to the CLI
+
+# ---------------------------------------------------------------------------
+# What the finished files look like.
+# The engine writes lossless PNG; this step turns those into something smaller
+# afterwards. Keeping the two apart means no lossy image is ever re-compressed,
+# and it avoids the engine's JPEG-only quality knob.
+# ---------------------------------------------------------------------------
+output:
+  compress: true
+  format: webp          # webp | jpg | png  (png = leave the engine output as is)
+  quality: 95           # webp/jpg only
+  keep_source: false    # true = keep the PNG next to the converted file
+
+# ---------------------------------------------------------------------------
+# Which translation backend. Nothing here is tied to one model.
+#   translator  -> any backend name from manga-image-translator
+#                  (off, openai, custom_openai, ollama, sakura, deepseek, gemini, ...)
+#   target_lang -> CHS, CHT, ENG, JPN, KOR, ... (manga-image-translator codes)
+# ---------------------------------------------------------------------------
+translation:
+  translator: openai
+  target_lang: CHS
+  # Optional. Only backends that read a YAML config need it (openai,
+  # custom_openai, ollama). Point it at your own copy; see
+  # config/gpt_config.example.yaml for ready-made blocks for several providers.
+  gpt_config: ./config/gpt_config.yaml
+  # Convenience: set these instead of exporting env vars by hand. Only applied
+  # to backends that read them, and only when the value is non-empty.
+  model: null            # e.g. qwen2.5:32b, gpt-4o-mini, deepseek-chat
+  base_url: null         # e.g. http://127.0.0.1:11434/v1, https://api.deepseek.com/v1
+  api_key_env: null      # e.g. OPENAI_API_KEY (the key itself is read from the env)
+  # Deterministic fix-ups around the model. Both optional, both regex-based.
+  pre_dict: ./config/dict/pre-dict.txt      # applied to OCR text before translation
+  post_dict: ./config/dict/post-dict.txt    # applied to the translation afterwards
+
+batch:
+  retries: 1              # whole-book retries when the engine exits non-zero
+  fail_fast: false        # true = stop the run on the first failed book
+  limit: 0                # 0 = all books

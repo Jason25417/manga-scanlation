@@ -1,0 +1,81 @@
+{
+  "_comment": [
+    "This is manga-image-translator's own config format, passed through with",
+    "--config-file. Every field below is upstream's; only the defaults we",
+    "changed are explained. Copy to config/mit-config.json and edit freely.",
+    "",
+    "The translator block is overwritten at run time from config.yaml",
+    "(translator / target_lang / gpt_config), so do not bother editing it here.",
+    "Tune detection, OCR, inpainting and rendering here -- that is the whole",
+    "point of keeping this file separate from config.yaml."
+  ],
+
+  "kernel_size": 3,
+  "mask_dilation_offset": 30,
+
+  "detector": {
+    "detector": "default",
+    "detection_size": 2048,
+    "text_threshold": 0.5,
+    "box_threshold": 0.7,
+    "unclip_ratio": 2.3,
+    "det_rotate": false,
+    "det_auto_rotate": false,
+    "det_invert": false,
+    "det_gamma_correct": false
+  },
+
+  "ocr": {
+    "ocr": "48px",
+    "use_mocr_merge": false,
+    "min_text_length": 0,
+    "_ignore_bubble_hint": "Threshold for ignoring text outside bubbles. Keep 0 for comics where dialogue and sound effects are drawn directly on the art; raising it silently deletes that text.",
+    "ignore_bubble": 0
+  },
+
+  "inpainter": {
+    "inpainter": "lama_large",
+    "inpainting_size": 2048,
+    "_inpainting_precision_hint": "fp32. Half precision makes torch.fft raise on non power-of-two feature maps, and is slower even when it works.",
+    "inpainting_precision": "fp32"
+  },
+
+  "translator": {
+    "translator": "openai",
+    "target_lang": "CHS",
+    "no_text_lang_skip": false,
+    "skip_lang": null,
+    "gpt_config": null
+  },
+
+  "render": {
+    "renderer": "default",
+    "alignment": "auto",
+    "_disable_font_border_hint": "false keeps the outline. Most comics have outlined text on top of art; the outline is what keeps the replacement readable over imperfect inpainting.",
+    "disable_font_border": false,
+    "font_size_offset": 4,
+    "font_size_minimum": -1,
+    "direction": "auto",
+    "uppercase": false,
+    "lowercase": false,
+    "gimp_font": "Sans-serif",
+    "_no_hyphenation_hint": "true stops the renderer splitting words, which matters when proper nouns are kept in the source language.",
+    "no_hyphenation": true,
+    "font_color": null,
+    "line_spacing": null,
+    "font_size": null,
+    "rtl": true
+  },
+
+  "upscale": {
+    "upscaler": "esrgan",
+    "revert_upscaling": false,
+    "upscale_ratio": null
+  },
+
+  "colorizer": {
+    "colorizer": "none",
+    "colorization_size": 576,
+    "denoise_sigma": 30
+  }
+}

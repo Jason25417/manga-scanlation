@@ -1,0 +1,68 @@
+# Translation-model settings for manga-image-translator.
+#
+# Copy to config/gpt_config.yaml and point config.yaml -> translation.gpt_config
+# at your copy.
+#
+# How lookup works (upstream `translators/config_gpt.py`): a backend asks for
+# "<backend>.<model>.<key>" first and then falls back to "<key>" at the top
+# level. So the top-level block below applies to every backend, and you only add
+# per-backend sections when you want different behaviour for one of them.
+
+# Keep it low: comic dialogue is short and strongly context-bound, higher
+# temperature starts inventing words.
+temperature: 0.3
+top_p: 0.9
+
+# Local models occasionally ignore the output format. Retrying the batch is
+# cheaper than losing a page.
+retry_attempts: 3
+
+# Optional. Some reasoning models wrap their answer in a block like
+# <think>...</think>; without stripping, that text gets typeset onto the page.
+# Upstream compiles this with re.DOTALL, so it may match across lines.
+rgx_capture: '<think>.*</think>\s*(.*)|(.*)'
+
+# The prompt itself.
+#
+# Leave this commented out to use the default prompt that ships with
+# manga-image-translator. If you want your own, either write it inline here:
+#
+#   chat_system_template: |
+#     You are a comic translator...
+#
+# or keep it in a file and let `mscan` inject it:
+#
+#   translation.prompt: ./config/prompt/zh-CN.txt   (in config.yaml)
+#
+# See config/prompt/zh-CN.example.txt for a working Simplified-Chinese prompt.
+
+# ---------------------------------------------------------------------------
+# Provider examples. Uncomment / adapt the one you use.
+# ---------------------------------------------------------------------------
+#
+# Any OpenAI-compatible endpoint (Ollama /v1, vLLM, LM Studio, DeepSeek,
+# OpenRouter, SiliconFlow, a company gateway...). Use translator: openai and set
+# the environment variables, or let config.yaml fill them in:
+#
+#   translation:
+#     translator: openai
+#     model: qwen2.5:32b
+#     base_url: http://127.0.0.1:11434/v1
+#     api_key_env: OPENAI_API_KEY      # value read from that variable
+#
+# The `openai` backend reads OPENAI_API_KEY, OPENAI_API_BASE, OPENAI_MODEL.
+# A local server that ignores the key still needs a non-empty one; any string
+# works (e.g. "local").
+#
+# --- Ollama through the custom_openai backend (matches CUSTOM_OPENAI_*) ------
+# custom_openai reads CUSTOM_OPENAI_BASE_URL / CUSTOM_OPENAI_MODEL /
+# CUSTOM_OPENAI_MODEL_CONF, and its config key is fixed to "ollama.<MODEL_CONF>".
+# ollama:
+#   qwen2.5:
+#     temperature: 0.3
+#
+# --- Sakura LLM (Japanese/Chinese specialised, runs locally) ----------------
+# translator: sakura in config.yaml; model paths come from the library itself.
+#
+# --- DeepSeek ---------------------------------------------------------------
+# translator: deepseek, env DEEPSEEK_API_KEY, config key "deepseek.<model>".

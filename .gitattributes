@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Keep the shipped examples byte-for-byte identical on every platform.
+*.png binary
+*.jpg binary
+*.webp binary
+*.otf binary
+*.ttf binary
+*.ttc binary
+*.sqlite3 binary

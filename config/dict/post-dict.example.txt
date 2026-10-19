@@ -1,0 +1,15 @@
+# Terminology guard applied to the *translation*, so the same source term always
+# renders the same way. Same format as pre-dict.example.txt: regex, then a
+# replacement with no spaces.
+#
+# Honest result from the project this came out of: once the prompt was written
+# properly, these rules never fired -- terminology consistency was solved by the
+# prompt, and this file degraded into a safety net. Write the prompt first; use
+# this for the handful of terms you truly cannot let drift.
+#
+# Example: keep a character's title identical across pages.
+# 小姐 小姐
+# 主人 主人
+#
+# Example: stop a specific mistranslation of a recurring term.
+# 御主大人 御主

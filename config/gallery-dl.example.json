@@ -1,0 +1,22 @@
+{
+  "extractor": {
+    "base-directory": "./data/source",
+    "sleep-request": [2.0, 4.0],
+    "archive": "./data/.gallery-dl-archive.sqlite3",
+    "archive-format": "gallery_{category}_{id}_{num}",
+    "directory": ["{title}"],
+    "filename": "{num:>04}.{extension}",
+    "metadata": false,
+    "tags": false,
+    "limits": false
+  },
+  "downloader": {
+    "retries": 4,
+    "timeout": 60.0,
+    "part": true
+  },
+  "output": {
+    "mode": "auto",
+    "progress": false
+  }
+}

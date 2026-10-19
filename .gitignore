@@ -1,0 +1,49 @@
+# --- runtime artifacts -------------------------------------------------------
+data/
+inbox/
+links.txt
+*.log
+
+# --- local configuration (real endpoints / keys / paths) ---------------------
+config.yaml
+config/mit-config.json
+config/gpt_config.yaml
+config/gallery-dl.json
+config/dict/pre-dict.txt
+config/dict/post-dict.txt
+config/prompt/zh-CN.txt
+fonts/*.otf
+fonts/*.ttf
+fonts/*.ttc
+
+# --- third-party checkouts ---------------------------------------------------
+vendor/
+external*/
+
+# --- secrets / credentials ---------------------------------------------------
+*.env
+.env*
+*cookie*
+*secret*
+*credential*
+*.pem
+*.key
+
+# --- python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+
+# --- editors / OS ------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

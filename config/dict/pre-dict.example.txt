@@ -1,0 +1,29 @@
+# Text fix-ups applied to the OCR output *before* it reaches the translator.
+#
+# Format -- this is what manga-image-translator's load_dictionary parses:
+#   - one rule per line, whitespace separated
+#   - field 1: a regular expression matched against the OCR text
+#   - field 2: the replacement. It MUST NOT CONTAIN SPACES, because the parser
+#     splits the line on whitespace and accepts only 1 or 2 fields.
+#   - a line with only field 1 deletes every match
+#   - '#' or '//' starts a comment; everything after it on the line is dropped,
+#     so a regex containing either character cannot be written here
+#   - backreferences work in the replacement (\1, \g<1>) because the value is
+#     passed straight to re.sub
+#
+# Why bother: one wrong letter can flip the meaning of a sentence, and fixing it
+# here is deterministic and free, unlike another model call. But every rule is a
+# global substitution, so a bad rule creates new errors elsewhere -- only add
+# rules for mistakes you actually saw in your own material.
+#
+# Ship this file empty. The commented lines are shapes to copy from, not rules
+# that are known to help on your pages.
+#
+# # collapse a doubled space left by OCR
+# \s{2,}
+#
+# # restore a letter OCR keeps reading as its digit twin
+# \b([0-9])B\b \g<1>8
+#
+# # delete a stray page-number token glued to a line
+# \s\d{5,}\b
