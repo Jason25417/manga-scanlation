@@ -56,6 +56,10 @@ hard to support honestly. A fuller version may follow as a separate release; if
 it does, this repository stays the supported starting point, because a tool you
 can debug beats a scheduler you cannot. Start here.
 
+[ROADMAP.md](ROADMAP.md) is the precise inventory: what shipped in this version,
+what a fuller build adds (clipboard intake, link de-duplication, concurrency and
+GPU arbitration, a local dashboard), and why the split exists.
+
 ## Requirements
 
 | | |
